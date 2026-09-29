@@ -27,7 +27,13 @@ jobs:
       run: mvn package install -DskipTests
 
     - name: Test Java App
-      run: mvn test       
+      run: mvn test
+
+    - name: Upload JAR Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: java-app-jar
+        path: target/*.jar         
 
     - name: Build Docker Image
       run: docker build -t ${{ vars.IMAGE_NAME }}:v${{ github.run_number }} .
