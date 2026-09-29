@@ -5,7 +5,7 @@ on:
 
 concurrency:
      group: 'maven'
-     cancel-in-progress: true   
+     cancel-in-progress: false   
 
 jobs:
   build:
