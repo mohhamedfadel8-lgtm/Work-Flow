@@ -10,7 +10,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: YOUR_NAME
     steps:
     - name: Get Source Code
       uses: actions/checkout@v7
