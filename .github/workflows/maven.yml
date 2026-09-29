@@ -20,7 +20,7 @@ jobs:
     - name: Setup java v11
       uses: actions/setup-java@v4
       with:
-        distribution: 'adope'
+        distribution: 'adopt'
         java-version: '11'
 
     - name: Build Java App
