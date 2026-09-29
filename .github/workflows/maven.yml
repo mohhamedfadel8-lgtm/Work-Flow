@@ -11,3 +11,10 @@ jobs:
     - name: fadel
       run: |
          echo ${{ vars.Identity }} 
+  test:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+    - name: fadel
+      run: |
+         echo ${{ vars.Identity }}       
