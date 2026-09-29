@@ -1,12 +1,13 @@
 name: maven workflow
 
 on:
-  workflow_dispatch:  
+  workflow_dispatch:
 
 jobs:
-  build
+  build:
     runs-on: ubuntu-latest
+
     steps:
-    - name: test
-      run: |
-        echo test
+      - name: test
+        run: |
+          echo test
