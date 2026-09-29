@@ -33,7 +33,7 @@ jobs:
       run: docker build -t ${{ vars.IMAGE_NAME }}:v${{ github.run_number }} .
 
     - name: Login to Dockerhub
-      run: docker login -u &{{ secrets.USERNAME }} -p ${{ secrets.PASSWD }}
+      run: docker login -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWD }}
 
     - name: Push Docker Image
       run: docker push ${{ vars.IMAGE_NAME }}:v${{ github.run_number }}
