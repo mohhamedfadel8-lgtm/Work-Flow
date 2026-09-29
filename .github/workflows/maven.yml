@@ -10,4 +10,4 @@ jobs:
     steps:
     - name: fadel
       run: |
-         echo ${{vars.Identity}} 
+         echo ${{ vars.Identity }} 
