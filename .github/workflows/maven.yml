@@ -1,13 +1,12 @@
-name: Java CI with Maven
+name: first workflow
 
 on:
-  
-  workflow_dispatch:
+   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: test
+    - name: fadel
       run: |
-        echo test
+         echo my name is fadel 
