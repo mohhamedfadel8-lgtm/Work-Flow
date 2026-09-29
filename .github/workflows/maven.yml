@@ -6,7 +6,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: dev
     steps:
     - name: fadel
       run: |
-         echo my name is fadel 
+         echo ${{vars.Identity}} 
