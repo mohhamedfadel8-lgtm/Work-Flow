@@ -11,5 +11,5 @@ jobs:
   build:
     uses: ./.github/workflows/reusable_workflows.yaml
     with:
-      image-name: "prod-image"
-      environment: "prod" 
+      image-name: "test-image"
+      environment: "test"
