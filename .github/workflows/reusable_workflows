@@ -16,6 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
+    - name: echo environment
+      run: echo ${{ vars.ENVIRO_NAME }}
+
     - name: Get Source Code
       uses: actions/checkout@v7
       with:

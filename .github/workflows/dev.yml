@@ -1,4 +1,4 @@
-name: Java-App CI
+name: Dev for Java-App CI
 
 on:
   workflow_dispatch:

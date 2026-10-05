@@ -1,4 +1,4 @@
-name: Test for Java-App CI
+name: Prod For Java-App CI
 
 on:
   workflow_dispatch:
@@ -11,5 +11,5 @@ jobs:
   build:
     uses: ./.github/workflows/reusable_workflows.yaml
     with:
-      image-name: "test-image"
-      environment: "test"
+      image-name: "prod-image"
+      environment: "prod" 
