@@ -50,7 +50,7 @@ jobs:
         with:
           repository: 'mohhamedfadel8-lgtm/Java-App-CD'
           path: cdRepo
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.CD_TOKEN }}
 
       - name: Update Image Tag for CD
         run: |
