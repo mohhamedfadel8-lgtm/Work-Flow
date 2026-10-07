@@ -11,13 +11,6 @@ on:
         required: true
         type: string
 
-    secrets:
-      USERNAME:
-        required: true
-
-      PASSWD:
-        required: true
-
 
 jobs:
   build:
@@ -27,104 +20,51 @@ jobs:
 
     steps:
 
-      # -------------------------
-      # Show Environment Variable
-      # -------------------------
-      - name: Echo environment
-        run: echo "${{ vars.ENVIRO_NAME }}"
+    - name: echo environment
+      run: echo ${{ vars.ENVIRO_NAME }}
 
+    - name: Get Source Code
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: '0'
 
-      # -------------------------
-      # Get Source Code
-      # -------------------------
-      - name: Get Source Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    - name: Setup java v11
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'adopt'
+        java-version: '11'
 
+    - name: Build Java App
+      run: mvn package install -DskipTests
 
-      # -------------------------
-      # Setup Java 11
-      # -------------------------
-      - name: Setup Java v11
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '11'
+    - name: Test Java App
+      run: mvn test
 
+    - name: Build Docker Image
+      run: docker build -t ${{ inputs.image-name }}:v${{ github.run_number }} .
 
-      # -------------------------
-      # Build Java Application
-      # -------------------------
-      - name: Build Java App
-        run: mvn package install -DskipTests
+    - name: Login to Dockerhub
+      run: docker login -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWD }}
 
+    - name: Push Docker Image
+      run: docker push ${{ inputs.image-name }}:v${{ github.run_number }}
 
-      # -------------------------
-      # Test Java Application
-      # -------------------------
-      - name: Test Java App
-        run: mvn test
+    - name: Get CD Repo
+      uses: actions/checkout@v7
+      with:
+        Repository: https://github.com/mohhamedfadel8-lgtm/Java-App-CD.git
+        path: cdRepo
 
+    - name: Update Image Tag for CD
+      run: |
+        sed -i "s#.*image: .*#        image: ${{ inputs.image-name }}:v${{ github.run_number }}" cdRepo/deployment.yaml
 
-      # -------------------------
-      # Build Docker Image
-      # -------------------------
-      - name: Build Docker Image
-        run: |
-          docker build \
-            -t ${{ inputs.image-name }}:v${{ github.run_number }} .
+    - name: Commit and Push Changes
+      run: |
+        cd cdRepo
+        git config user.name "github-actions"
+        git cionfig user.enail "github-actions@github.com"
 
-
-      # -------------------------
-      # Login to Docker Hub
-      # -------------------------
-      - name: Login to Docker Hub
-        run: |
-          echo "${{ secrets.PASSWD }}" | docker login \
-            -u "${{ secrets.USERNAME }}" \
-            --password-stdin
-
-
-      # -------------------------
-      # Push Docker Image
-      # -------------------------
-      - name: Push Docker Image
-        run: |
-          docker push ${{ inputs.image-name }}:v${{ github.run_number }}
-
-
-      # -------------------------
-      # Get CD Repository
-      # -------------------------
-      - name: Get CD Repo
-        uses: actions/checkout@v4
-        with:
-          repository: mohhamedfadel8-lgtm/Java-App-CD.git
-          path: cdRepo
-
-
-      # -------------------------
-      # Update Image Tag
-      # -------------------------
-      - name: Update Image Tag for CD
-        run: |
-          sed -i 's#^[[:space:]]*image:.*#        image: ${{ inputs.image-name }}:v${{ github.run_number }}#' \
-            cdRepo/deployment.yaml
-
-
-      # -------------------------
-      # Commit and Push Changes
-      # -------------------------
-      - name: Commit and Push Changes
-        run: |
-          cd cdRepo
-
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-
-          git add .
-
-          git commit -m "Update Image Tag for CD" || echo "No changes to commit"
-
-          git push
+        git add .
+        git commit -m "Update Image Tag for CD"
+        git push
