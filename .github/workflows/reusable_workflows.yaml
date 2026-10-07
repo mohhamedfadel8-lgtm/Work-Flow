@@ -9,11 +9,11 @@ on:
       environment:
         required: true
         type: string
-    secrets:
-      USERNAME:
-        required: true
-      PASSWD:
-        required: true
+    #secrets:
+     # USERNAME:
+      #  required: true
+      #PASSWD:
+       # required: true
 
 jobs:
   build:

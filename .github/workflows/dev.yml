@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
     uses: ./.github/workflows/reusable_workflows.yaml
     with:
       image-name: 'fadel8/repo_1'
