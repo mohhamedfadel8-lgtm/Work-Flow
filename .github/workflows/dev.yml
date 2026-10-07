@@ -1,9 +1,7 @@
 name: Dev for Java-App CI
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   deploy:
