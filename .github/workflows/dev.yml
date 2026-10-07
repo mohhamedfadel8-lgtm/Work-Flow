@@ -11,5 +11,5 @@ jobs:
   build:
     uses: ./.github/workflows/reusable_workflows.yaml
     with:
-      image-name: "dev-image"
+      image-name: "fadel8/repo_1"
       environment: "dev"

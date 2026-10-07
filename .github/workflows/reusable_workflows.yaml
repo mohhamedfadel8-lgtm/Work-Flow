@@ -35,14 +35,33 @@ jobs:
 
     - name: Test Java App
       run: mvn test
-
-    - name: Upload JAR Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: java-app-jar
-        path: target/*.jar         
-
+        
     - name: Build Docker Image
       run: docker build -t ${{ inputs.image-name }}:v${{ github.run_number }} .
 
+    - name: Login to Dockerhub
+      run: docker login -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWD }}
+
+    - name: Push Docker Image
+      run: docker push ${{ inputs.image-name }}:v${{ github.run_number }}
+      
+    - name: Get CD Repo
+      uses: actions/checkout@v7
+      with:
+         Repository: https://github.com/mohhamedfadel8-lgtm/Java-App-CD.git
+         path: cdRepo
+         
+    - name: Update Image Tag for CD
+      run: |
+         sed -i "s#.*image: .*#        image: ${{ inputs.image-name }}:v${{ github.run_number }}" cdRepo/deployment.yaml
+         
+    - name: Commit and Push Changes
+      run: |
+         cd cdRepo
+         git config user.name "github-actions"
+         git cionfig user.enail "github-actions@github.com"
+         
+         git add .
+         git commit -m "Update Image Tag for CD"
+         git push
    
