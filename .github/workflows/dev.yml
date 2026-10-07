@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Dev for Java-App CI
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/reusable_workflows.yaml
     with:
       image-name: 'fadel8/repo_1'
-      environment: 'prod' # Must match the GitHub Environment name if using Environment Secrets
+      environment: 'dev' 
     secrets:
       USERNAME: ${{ secrets.USERNAME }}
       PASSWD: ${{ secrets.PASSWD }}
