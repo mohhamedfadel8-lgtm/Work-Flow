@@ -40,8 +40,7 @@ jobs:
         run: docker build -t ${{ inputs.image-name }}:v${{ github.run_number }} .
 
       - name: Login to Dockerhub
-        run: |
-          echo "${{ secrets.PASSWD }}" | docker login -u "${{ secrets.USERNAME }}" --password-stdin
+        run: docker login -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWD }}
 
       - name: Push Docker Image
         run: docker push ${{ inputs.image-name }}:v${{ github.run_number }}
@@ -57,12 +56,12 @@ jobs:
         run: |
           sed -i "s#.*image: .*#        image: ${{ inputs.image-name }}:v${{ github.run_number }}#" cdRepo/deployment.yaml
 
-      - name: Commit and Push Changes
-        run: |
-          cd cdRepo
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+      #- name: Commit and Push Changes
+       # run: |
+          #cd cdRepo
+          #git config user.name "github-actions"
+          #git config user.email "github-actions@github.com"
 
-          git add .
-          git commit -m "Update Image Tag for CD"
-          git push
+          #git add .
+          #git commit -m "Update Image Tag for CD"
+          #git push
