@@ -11,20 +11,17 @@ on:
         required: true
         type: string
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     environment: ${{ inputs.environment }}
 
     steps:
-
     - name: echo environment
       run: echo ${{ vars.ENVIRO_NAME }}
 
     - name: Get Source Code
-      uses: actions/checkout@v7
+      uses: actions/checkout@v4
       with:
         fetch-depth: '0'
 
@@ -44,26 +41,28 @@ jobs:
       run: docker build -t ${{ inputs.image-name }}:v${{ github.run_number }} .
 
     - name: Login to Dockerhub
-      run: docker login -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWD }}
+      run: |
+        echo "${{ secrets.PASSWD }}" | docker login -u "${{ secrets.USERNAME }}" --password-stdin
 
     - name: Push Docker Image
       run: docker push ${{ inputs.image-name }}:v${{ github.run_number }}
 
     - name: Get CD Repo
-      uses: actions/checkout@v7
+      uses: actions/checkout@v4
       with:
-        Repository: https://github.com/mohhamedfadel8-lgtm/Java-App-CD.git
+        repository: 'mohhamedfadel8-lgtm/Java-App-CD'
         path: cdRepo
+        #token: ${{ secrets.GITHUB_TOKEN }} # Or a Personal Access Token with push rights
 
     - name: Update Image Tag for CD
       run: |
-        sed -i "s#.*image: .*#        image: ${{ inputs.image-name }}:v${{ github.run_number }}" cdRepo/deployment.yaml
+        sed -i "s#.*image: .*#        image: ${{ inputs.image-name }}:v${{ github.run_number }}#" cdRepo/deployment.yaml
 
     - name: Commit and Push Changes
       run: |
         cd cdRepo
         git config user.name "github-actions"
-        git cionfig user.enail "github-actions@github.com"
+        git config user.email "github-actions@github.com"
 
         git add .
         git commit -m "Update Image Tag for CD"
