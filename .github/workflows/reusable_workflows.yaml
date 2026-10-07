@@ -40,8 +40,7 @@ jobs:
         run: docker build -t ${{ inputs.image-name }}:v${{ github.run_number }} .
 
       - name: Login to Dockerhub
-        run: |
-          echo "${{ secrets.PASSWD }}" | docker login -u "${{ secrets.USERNAME }}" --password-stdin
+        run: docker login -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWD }}
 
       - name: Push Docker Image
         run: docker push ${{ inputs.image-name }}:v${{ github.run_number }}
