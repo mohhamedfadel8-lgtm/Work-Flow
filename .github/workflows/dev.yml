@@ -1,15 +1,16 @@
-name: Dev for Java-App CI
+name: CI/CD Pipeline
 
 on:
-  workflow_dispatch:
-
-concurrency:
-   group: 'java'
-   cancel-in-progress: false
+  push:
+    branches:
+      - main
 
 jobs:
-  build:
-    uses: ./.github/workflows/reusable_workflows.yaml
+  deploy:
+    uses: ./.github/workflows/reusable.yml
     with:
-      image-name: "fadel8/repo_1"
-      environment: "dev"
+      image-name: 'my-docker-image'
+      environment: 'production' # Must match the GitHub Environment name if using Environment Secrets
+    secrets:
+      USERNAME: ${{ secrets.USERNAME }}
+      PASSWD: ${{ secrets.PASSWD }}

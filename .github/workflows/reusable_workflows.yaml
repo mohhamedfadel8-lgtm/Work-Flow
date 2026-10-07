@@ -6,10 +6,14 @@ on:
       image-name:
         required: true
         type: string
-
       environment:
         required: true
         type: string
+    secrets:
+      USERNAME:
+        required: true
+      PASSWD:
+        required: true
 
 jobs:
   build:
@@ -17,53 +21,48 @@ jobs:
     environment: ${{ inputs.environment }}
 
     steps:
-    - name: echo environment
-      run: echo ${{ vars.ENVIRO_NAME }}
+      - name: Get Source Code
+        uses: actions/checkout@v4
 
-    - name: Get Source Code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: '0'
+      - name: Setup java v11
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'adopt'
+          java-version: '11'
 
-    - name: Setup java v11
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'adopt'
-        java-version: '11'
+      - name: Build Java App
+        run: mvn package install -DskipTests
 
-    - name: Build Java App
-      run: mvn package install -DskipTests
+      - name: Test Java App
+        run: mvn test
 
-    - name: Test Java App
-      run: mvn test
+      - name: Build Docker Image
+        run: docker build -t ${{ inputs.image-name }}:v${{ github.run_number }} .
 
-    - name: Build Docker Image
-      run: docker build -t ${{ inputs.image-name }}:v${{ github.run_number }} .
+      - name: Login to Dockerhub
+        run: |
+          echo "${{ secrets.PASSWD }}" | docker login -u "${{ secrets.USERNAME }}" --password-stdin
 
-    - name: Login to Dockerhub
-      run: |
-        echo "${{ secrets.PASSWD }}" | docker login -u "${{ secrets.USERNAME }}" --password-stdin
+      - name: Push Docker Image
+        run: docker push ${{ inputs.image-name }}:v${{ github.run_number }}
 
-    - name: Push Docker Image
-      run: docker push ${{ inputs.image-name }}:v${{ github.run_number }}
+      - name: Get CD Repo
+        uses: actions/checkout@v4
+        with:
+          repository: 'mohhamedfadel8-lgtm/Java-App-CD'
+          path: cdRepo
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Get CD Repo
-      uses: actions/checkout@v4
-      with:
-        repository: 'mohhamedfadel8-lgtm/Java-App-CD'
-        path: cdRepo
-        #token: ${{ secrets.GITHUB_TOKEN }} # Or a Personal Access Token with push rights
+      - name: Update Image Tag for CD
+        run: |
+          sed -i "s#.*image: .*#        image: ${{ inputs.image-name }}:v${{ github.run_number }}#" cdRepo/deployment.yaml
 
-    - name: Update Image Tag for CD
-      run: |
-        sed -i "s#.*image: .*#        image: ${{ inputs.image-name }}:v${{ github.run_number }}#" cdRepo/deployment.yaml
+      - name: Commit and Push Changes
+        run: |
+          cd cdRepo
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
 
-    - name: Commit and Push Changes
-      run: |
-        cd cdRepo
-        git config user.name "github-actions"
-        git config user.email "github-actions@github.com"
-
-        git add .
-        git commit -m "Update Image Tag for CD"
-        git push
+          git add .
+          git commit -m "Update Image Tag for CD"
+          git push
