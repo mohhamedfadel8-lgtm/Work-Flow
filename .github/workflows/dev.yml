@@ -12,3 +12,4 @@ jobs:
     secrets:
       USERNAME: ${{ secrets.USERNAME }}
       PASSWD: ${{ secrets.PASSWD }}
+      CD_TOKEN: ${{ secrets.CD_TOKEN }}
