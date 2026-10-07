@@ -56,12 +56,12 @@ jobs:
         run: |
           sed -i "s#.*image: .*#        image: ${{ inputs.image-name }}:v${{ github.run_number }}#" cdRepo/deployment.yaml
 
-      #- name: Commit and Push Changes
-        #run: |
-         # cd cdRepo
-         # git config user.name "github-actions"
-         # git config user.email "github-actions@github.com"
+      - name: Commit and Push Changes
+        run: |
+          cd cdRepo
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
 
-         # git add .
-         # git commit -m "Update Image Tag for CD"
-         # git push
+          git add .
+          git commit -m "Update Image Tag for CD"
+          git push
